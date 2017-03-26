@@ -1,0 +1,16 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "GraphQL": "0.15.1.678",
+    "NETStandard.Library": "1.6.1"
+  },
+
+  "frameworks": {
+    "net461": {
+      "imports": "dnxcore50",
+      "dependencies": {
+      }
+    }
+  }
+}
