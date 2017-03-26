@@ -1,4 +1,4 @@
-# Nitrolize
+![Logo](static/nitrolize-github-logo-background.png "Logo")
 Nitrolize accelerates your GraphQL server development in C#.
 
 Based on [GraphQL for .NET](http://github.com/graphql-dotnet/graphql-dotnet) it offers
