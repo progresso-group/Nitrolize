@@ -2,7 +2,7 @@
 Nitrolize accelerates your GraphQL server development in C#.
 
 Based on [GraphQL for .NET](http://github.com/graphql-dotnet/graphql-dotnet) it offers
-* mechanisms to auto generate GraphQL Types from your domain model classes,
+* mechanisms to auto generate Relay compatible GraphQL Types from your domain model classes,
 * auto converts Guid / int Ids from your domain model to Base64 encoded unique ids for your client and vice versa,
 * simplifies field declaration by an easy to use syntax.
 
