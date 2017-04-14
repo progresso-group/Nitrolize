@@ -18,4 +18,10 @@
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
+  <PropertyGroup>
+    <PostBuildEvent Condition="'$(Configuration)' == 'NuGet'">
+      cd $(ProjectDir)
+      dotnet pack --no-build -c Release
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,6 +1,5 @@
 {
   "version": "1.0.0-*",
-
   "dependencies": {
     "FluentAssertions": "4.19.2",
     "Machine.Fakes": "2.8.0",
@@ -9,10 +8,12 @@
     "NETStandard.Library": "1.6.1",
     "Nitrolize": "1.0.0-*"
   },
-
   "frameworks": {
     "net461": {
       "imports": "dnxcore50"
     }
+  },
+  "configurations": {
+    "NuGet": {}
   }
 }
