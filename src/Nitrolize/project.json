@@ -1,16 +1,30 @@
-﻿{
-  "version": "1.0.0-*",
-
+{
+  "name": "Nitrolize",
+  "version": "0.1.1-*",
+  "title": "Nitrolize",
+  "authors": [ "progresso group" ],
+  "packOptions": {
+    "owners": [ "progresso group" ],
+    "releaseNotes": "Fixed package bundling",
+    "projectUrl": "https://github.com/progresso-group/Nitrolize",
+    "iconUrl": "https://raw.githubusercontent.com/progresso-group/Nitrolize/master/static/nitrolize-nuget-logo.png",
+    "licenseUrl": "https://www.gnu.org/licenses/agpl-3.0.de.html",
+    "tags": [ "GraphQL", "Relay" ]
+  },
+  "copyright": "Copyright 2017 by progresso group",
+  "description": "Semi automatic Relay compatible GraphQL for C#",
   "dependencies": {
     "GraphQL": "0.15.1.678",
     "NETStandard.Library": "1.6.1"
   },
-
   "frameworks": {
     "net461": {
       "imports": "dnxcore50",
       "dependencies": {
       }
     }
+  },
+  "configurations": {
+    "NuGet": {}
   }
 }
