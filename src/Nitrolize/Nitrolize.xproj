@@ -21,7 +21,7 @@
   <PropertyGroup>
     <PostBuildEvent Condition="'$(Configuration)' == 'NuGet'">
       cd $(ProjectDir)
-      dotnet pack --no-build -c Release
+      dotnet pack -c NuGet
     </PostBuildEvent>
   </PropertyGroup>
 </Project>
