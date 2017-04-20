@@ -59,7 +59,7 @@ namespace Nitrolize.Tests
             public List<ItemB> Items { get; set; }
             public List<ItemB> NullItems { get; set; }
 
-            private string privateField;
+            private string privateField = "empty";
             public string PrivateField
             {
                 get
@@ -68,7 +68,7 @@ namespace Nitrolize.Tests
                 }
             }
 
-            private List<ItemB> fieldItems;
+            private List<ItemB> fieldItems = new List<ItemB>();
             public List<ItemB> FieldItems
             {
                 get
