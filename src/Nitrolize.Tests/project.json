@@ -6,7 +6,7 @@
     "Machine.Fakes.Moq": "2.8.0",
     "Machine.Specifications": "0.11.0",
     "NETStandard.Library": "1.6.1",
-    "Nitrolize": "1.0.0-*"
+    "Nitrolize": "0.1.2"
   },
   "frameworks": {
     "net461": {
