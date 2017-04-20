@@ -1,11 +1,11 @@
 {
   "name": "Nitrolize",
-  "version": "0.1.1-*",
+  "version": "0.1.2-*",
   "title": "Nitrolize",
   "authors": [ "progresso group" ],
   "packOptions": {
     "owners": [ "progresso group" ],
-    "releaseNotes": "Fixed package bundling",
+    "releaseNotes": "Added support for .NETCoreApp",
     "projectUrl": "https://github.com/progresso-group/Nitrolize",
     "iconUrl": "https://raw.githubusercontent.com/progresso-group/Nitrolize/master/static/nitrolize-nuget-logo.png",
     "licenseUrl": "https://www.gnu.org/licenses/agpl-3.0.de.html",
@@ -22,8 +22,29 @@
       "imports": "dnxcore50",
       "dependencies": {
       }
+    },
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "Microsoft.Extensions.DependencyModel": "1.1.1",
+        "System.ComponentModel.TypeConverter": "4.3.0",
+        "System.Reflection.Emit": "4.3.0"
+      },
+      "buildOptions": {
+        "define": [
+          "NETCOREAPP1_0"
+        ]
+      }
     }
   },
+
+  "runtimes": {
+    "win10-x64": {}
+  },
+
   "configurations": {
     "NuGet": {}
   }

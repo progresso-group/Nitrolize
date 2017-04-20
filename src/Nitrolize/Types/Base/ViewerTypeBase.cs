@@ -57,7 +57,7 @@ namespace Nitrolize.Types.Base
             // construct resolving method
             Func<ResolveFieldContext<object>, object> resolve = (context) =>
             {
-                return ((Delegate)(field.GetValue(this))).Method.Invoke(this, new object[] { context });
+                return ((Delegate)(field.GetValue(this))).GetMethodInfo().Invoke(this, new object[] { context });
             };
 
             // handle authentication and authorization
@@ -79,14 +79,14 @@ namespace Nitrolize.Types.Base
             Func<ResolveFieldContext<object>, object> resolve = (context) =>
             {
                 // get the connection delegate
-                var method = ((Delegate)(field.GetValue(this))).Method;
+                var method = ((Delegate)(field.GetValue(this))).GetMethodInfo();
 
                 // convert the global id to local id
                 var globalId = context.GetArgument<string>(entityType.GetIdPropertyName().ToFirstLower());
                 var id = GlobalId.ToLocalId(idType, globalId);
 
                 // invoke field with "context" and "id"
-                return ((Delegate)(field.GetValue(this))).Method.Invoke(this, new object[] { context, id });
+                return method.Invoke(this, new object[] { context, id });
             };
 
             // handle authentication and authorization
@@ -113,7 +113,7 @@ namespace Nitrolize.Types.Base
                 Func<ResolveFieldContext<object>, object> resolve = (context) =>
                 {
                     // get the connection delegate
-                    var method = ((Delegate)(connection.GetValue(this))).Method;
+                    var method = ((Delegate)(connection.GetValue(this))).GetMethodInfo();
 
                     // get order by infos
                     var orderByValue = context.GetArgument<int?>("orderBy");
@@ -144,7 +144,7 @@ namespace Nitrolize.Types.Base
                     });
 
                     // invoke connection with "context" and "parameters"
-                    return ((Delegate)(connection.GetValue(this))).Method.Invoke(this, new object[] { context, parameters });
+                    return method.Invoke(this, new object[] { context, parameters });
                 };
 
                 // handle authentication and authorization

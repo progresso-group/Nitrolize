@@ -1,4 +1,11 @@
 ﻿using GraphQL.Types;
+
+#if NETCOREAPP1_0
+
+using Nitrolize.Polyfills;
+
+#endif
+
 using Nitrolize.Types;
 using System;
 using System.Collections;
@@ -44,7 +51,7 @@ namespace Nitrolize.Extensions
 
             // define and return the new type
             TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, TypeAttributes.Public, type);
-            return typeBuilder.CreateType();
+            return typeBuilder.CreateTypeInfo().AsType();
         }
 
         private static ModuleBuilder CreateVirtualModuleBuilderForType(Type type)
@@ -54,9 +61,9 @@ namespace Nitrolize.Extensions
             // create an assembly for the type
             var assemblyName = new AssemblyName();
             assemblyName.Name = $"GraphQL.VirtualTypes.{typeName}";
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
 
-            return assemblyBuilder.DefineDynamicModule($"GraphQLVirtualTypesModule", "GraphQL.VirtualTypes.{typeName}.dll");
+            return assemblyBuilder.DefineDynamicModule("GraphQLVirtualTypesModule");
         }
 
         private static ModuleBuilder CreateVirtualModuleBuilderForAdditionType()
@@ -64,16 +71,16 @@ namespace Nitrolize.Extensions
             // create an assembly for the type
             var assemblyName = new AssemblyName();
             assemblyName.Name = "GraphQL.VirtualTypes.AdditionTypes";
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
 
-            return assemblyBuilder.DefineDynamicModule("GraphQLVirtualTypesModule", "GraphQL.VirtualTypes.AdditionTypes.dll");
+            return assemblyBuilder.DefineDynamicModule("GraphQLVirtualTypesModule");
         }
 
         public static string GetVirtualTypeName(this Type type)
         {
             // if the type is of form GenericClass<SomeClass>
             // then typeName is constructed as 'GenericClassSomeClass'.
-            if (type.IsGenericType)
+            if (type.IsGenericType())
             {
                 var genericTypeName = type.GetGenericTypeDefinition().Name;
                 genericTypeName = genericTypeName.Substring(0, genericTypeName.IndexOf('`'));
@@ -95,7 +102,7 @@ namespace Nitrolize.Extensions
                 typeBuilder.AddProperty(argument, typeof(string), false);
             }
 
-            return typeBuilder.CreateType();
+            return typeBuilder.CreateTypeInfo().AsType();
         }
 
         /// <summary>
@@ -139,7 +146,7 @@ namespace Nitrolize.Extensions
                 }
 
                 // handle collections with items
-                if (property.PropertyType.GetInterface("ICollection") != null && property.PropertyType.IsGenericType)
+                if (property.PropertyType.GetTypeInfo().GetInterface("ICollection") != null && property.PropertyType.IsGenericType())
                 {
                     var itemType = property.PropertyType.GenericTypeArguments[0];
                     itemType = itemType.ConvertToInputType();
@@ -163,7 +170,7 @@ namespace Nitrolize.Extensions
                 typeBuilder.SetCustomAttribute(customAttributeBuilder);
             }
 
-            return typeBuilder.CreateType();
+            return typeBuilder.CreateTypeInfo().AsType();
         }
 
         private static void AddProperty(this TypeBuilder typeBuilder, string name, Type type, bool hasOnlyGetter)
@@ -338,7 +345,7 @@ namespace Nitrolize.Extensions
             }
 
             // handle enums
-            if (type.IsEnum)
+            if (type.IsEnum())
             {
                 // construct and return an EnumerationType<type>
                 var enumerationType = typeof(EnumerationType<>);
@@ -354,7 +361,7 @@ namespace Nitrolize.Extensions
             }
 
             // handle list
-            if (type.GetInterfaces().Contains(typeof(IList)) && type.IsGenericType)
+            if (type.GetInterfaces().Contains(typeof(IList)) && type.IsGenericType())
             {
                 var listItemType = type.GetGenericArguments()[0];
                 listItemType = listItemType.MapToGraphType();
@@ -374,13 +381,63 @@ namespace Nitrolize.Extensions
 
         public static bool IsSimpleType(this Type type)
         {
-            return type.IsPrimitive ||
-                   type.IsEnum ||
+            return type.IsPrimitive() ||
+                   type.IsEnum() ||
                    type == typeof(string) ||
                    type == typeof(decimal) ||
                    type == typeof(Guid) ||
                    type == typeof(DateTime) ||
                    (Nullable.GetUnderlyingType(type) != null && Nullable.GetUnderlyingType(type).IsSimpleType());
         }
+
+        #region Polyfills
+
+        public static bool IsPrimitive(this Type type)
+        {
+#if NETCOREAPP1_0
+            return type.GetTypeInfo().IsPrimitive;
+#else
+            return type.IsPrimitive;
+#endif
+        }
+
+        public static bool IsEnum(this Type type)
+        {
+#if NETCOREAPP1_0
+            return type.GetTypeInfo().IsEnum;
+#else
+            return type.IsEnum;
+#endif
+        }
+
+        public static bool IsGenericType(this Type type)
+        {
+#if NETCOREAPP1_0
+            return type.GetTypeInfo().IsGenericType;
+#else
+            return type.IsGenericType;
+#endif
+        }
+
+//#if NETCOREAPP1_0
+//        public static MethodInfo[] GetMethods(this Type type)
+//        {
+//            return type.GetTypeInfo().GetMethods();
+//        }
+
+//        public static MethodInfo GetMethod(this Type type, string name)
+//        {
+//            return type.GetTypeInfo().GetMethod(name);
+//        }
+
+//        public static Type GetInterface(this Type type, string name)
+//        {
+//            return type.GetTypeInfo().GetInterface(name);
+//        }
+
+//#endif
+
+
+#endregion
     }
 }

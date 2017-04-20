@@ -8,6 +8,7 @@ using Nitrolize.Types.Input;
 using Nitrolize.Types.Payload;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Nitrolize.Extensions
 {
@@ -59,7 +60,7 @@ namespace Nitrolize.Extensions
                 }
 
                 // generate connection field for collection / list
-                if (property.PropertyType.GetInterface("ICollection") != null && property.PropertyType.IsGenericType)
+                if (property.PropertyType.GetInterface("ICollection") != null && property.PropertyType.IsGenericType())
                 {
                     // create an ObjectType<itemType>
                     var itemType = property.PropertyType.GenericTypeArguments[0];

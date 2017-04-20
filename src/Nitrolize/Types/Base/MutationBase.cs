@@ -46,7 +46,7 @@ namespace Nitrolize.Types.Base
                 // the resolver expects the context and an AddInput as inputs
                 Func<ResolveFieldContext<object>, object, object> resolve = (context, input) =>
                 {
-                    return ((Delegate)(property.GetValue(this))).Method.Invoke(this, new object[] { context, input });
+                    return ((Delegate)(property.GetValue(this))).GetMethodInfo().Invoke(this, new object[] { context, input });
                 };
 
                 // create the field
@@ -73,7 +73,7 @@ namespace Nitrolize.Types.Base
                 // the resolver expects the context and an UpdateInput as inputs
                 Func<ResolveFieldContext<object>, object, object> resolve = (context, input) =>
                 {
-                    return ((Delegate)(property.GetValue(this))).Method.Invoke(this, new object[] { context, input });
+                    return ((Delegate)(property.GetValue(this))).GetMethodInfo().Invoke(this, new object[] { context, input });
                 };
 
                 // create the field
@@ -101,7 +101,7 @@ namespace Nitrolize.Types.Base
                 // the resolver expects the context, the id and an UpdateInput as inputs
                 Func<ResolveFieldContext<object>, object, object, object> resolve = (context, id, input) =>
                 {
-                    return ((Delegate)(property.GetValue(this))).Method.Invoke(this, new object[] { context, id, input });
+                    return ((Delegate)(property.GetValue(this))).GetMethodInfo().Invoke(this, new object[] { context, id, input });
                 };
 
                 // create the field

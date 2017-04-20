@@ -1,5 +1,6 @@
 ﻿using GraphQL.Types;
 using Nitrolize.Types.Input;
+using System.Reflection;
 
 namespace Nitrolize.Extensions
 {
@@ -34,7 +35,7 @@ namespace Nitrolize.Extensions
                 }
 
                 // generate list field for collection / list
-                if (property.PropertyType.GetInterface("ICollection") != null && property.PropertyType.IsGenericType)
+                if (property.PropertyType.GetTypeInfo().GetInterface("ICollection") != null && property.PropertyType.IsGenericType())
                 {
                     // create an InputType<itemType>
                     var itemType = property.PropertyType.GenericTypeArguments[0];

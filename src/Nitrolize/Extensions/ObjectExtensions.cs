@@ -45,7 +45,7 @@ namespace Nitrolize.Extensions
                 var fieldValue = field.GetValue(subject);
                 var cloneField = cloneType.GetField(field.Name, bindingFlags);
 
-                if (field.FieldType.GetInterface("ICollection") != null && field.FieldType.IsGenericType)
+                if (field.FieldType.GetTypeInfo().GetInterface("ICollection") != null && field.FieldType.IsGenericType())
                 {
                     var collectionType = field.FieldType.GetGenericTypeDefinition();
                     var parameterType = field.FieldType.GenericTypeArguments[0];
@@ -95,7 +95,7 @@ namespace Nitrolize.Extensions
                 // handle id
                 if (property.Name == "Id" && !omitIdProperty)
                 {
-                    var attribute = subject.GetType().GetCustomAttribute<TypeDescriptionProviderAttribute>();
+                    var attribute = subject.GetType().GetTypeInfo().GetCustomAttribute<TypeDescriptionProviderAttribute>();
                     var idTypeName = attribute.TypeName;
 
                     if (idTypeName.Contains("Guid"))
@@ -161,7 +161,7 @@ namespace Nitrolize.Extensions
                 }
 
                 // handle collections
-                if (property.PropertyType.GetInterface("ICollection") != null && property.PropertyType.IsGenericType)
+                if (property.PropertyType.GetTypeInfo().GetInterface("ICollection") != null && property.PropertyType.IsGenericType())
                 {
                     // skip properties without setters
                     if (cloneProperty.GetSetMethod() == null)
