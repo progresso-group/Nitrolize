@@ -200,7 +200,7 @@ namespace Nitrolize.Extensions
             return clone;
         }
 
-        public static IEnumerable<PropertyInfo> GetPropertiesWithAttribute<TAttribute>(this Object subject) where TAttribute : Attribute
+        public static IEnumerable<PropertyInfo> GetPropertiesWithAttribute<TAttribute>(this object subject) where TAttribute : Attribute
         {
             return subject.GetType().GetProperties().Where(p => p.GetCustomAttributes(typeof(TAttribute), false).Any());
         }
