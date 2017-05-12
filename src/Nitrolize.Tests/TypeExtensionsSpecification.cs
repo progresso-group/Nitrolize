@@ -68,7 +68,7 @@ namespace Nitrolize.Tests
 
         It should_have_set_a_correct_name = () => Result.Name.Should().Be("GenericClassExampleClass");
 
-        It should_derive_from_original_type = () => Result.IsSubclassOf(typeof(GenericClass<ExampleClass>)).Should().BeTrue();
+        It should_derive_from_original_type = () => Result.GetTypeInfo().IsSubclassOf(typeof(GenericClass<ExampleClass>)).Should().BeTrue();
     }
 
     public abstract class GettingIdSpecification : TypeExtensionsSpecification
@@ -178,9 +178,9 @@ namespace Nitrolize.Tests
 
         It should_convert_ids_of_list_items = () => Result.GetProperty("Items").PropertyType.GetGenericArguments()[0].GetProperty("Id").PropertyType.Name.Should().Be("String");
 
-        It should_have_created_class_attribute = () => Result.GetCustomAttributes().Should().NotBeEmpty();
+        It should_have_created_class_attribute = () => Result.GetTypeInfo().GetCustomAttributes().Should().NotBeEmpty();
 
-        It should_have_stored_original_id_type_in_class_attribute = () => Result.GetCustomAttribute<TypeDescriptionProviderAttribute>().TypeName.Should().Contain("Guid");
+        It should_have_stored_original_id_type_in_class_attribute = () => Result.GetTypeInfo().GetCustomAttribute<TypeDescriptionProviderAttribute>().TypeName.Should().Contain("Guid");
 
         It should_have_omitted_id_property = () => ResultWithoutId.GetProperty("Id").Should().BeNull();
     }
