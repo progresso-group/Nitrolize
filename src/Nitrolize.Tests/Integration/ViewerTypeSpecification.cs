@@ -6,11 +6,12 @@ using GraphQL.Validation.Complexity;
 using Machine.Fakes;
 using Machine.Specifications;
 using Nitrolize.Types.Base;
+using TestSchema = Nitrolize.Tests.Integration.Schema;
 
 namespace Nitrolize.Tests.Schema
 {
     [Subject(typeof(ViewerTypeBase))]
-    public class ViewerTypeSpecification : WithSubject<ViewerType>
+    public class ViewerTypeSpecification : WithSubject<TestSchema.ViewerType>
     {
         protected static IDocumentExecuter DocumentExecuter = new DocumentExecuter();
         protected static IDocumentWriter DocumentWriter = new DocumentWriter(true);
@@ -20,7 +21,7 @@ namespace Nitrolize.Tests.Schema
         {
             var result = DocumentExecuter.ExecuteAsync(_ =>
             {
-                _.Schema = new Schema();
+                _.Schema = new TestSchema.Schema();
                 _.Query = query;
                 _.OperationName = null;
                 _.Inputs = new Inputs();

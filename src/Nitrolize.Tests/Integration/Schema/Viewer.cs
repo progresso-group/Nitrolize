@@ -1,7 +1,7 @@
 ﻿using Nitrolize.Identification;
 using System;
 
-namespace Nitrolize.Tests.Schema
+namespace Nitrolize.Tests.Integration.Schema
 {
     public class Viewer
     {

@@ -1,7 +1,7 @@
 ﻿using GraphQL.Types;
 using Nitrolize.Extensions;
 
-namespace Nitrolize.Tests.Schema
+namespace Nitrolize.Tests.Integration.Schema
 {
     public class Query : ObjectGraphType
     {

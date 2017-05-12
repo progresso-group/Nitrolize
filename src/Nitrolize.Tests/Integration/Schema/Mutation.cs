@@ -1,9 +1,8 @@
 ﻿using Nitrolize.Types.Base;
 
-namespace Nitrolize.Tests.Schema
+namespace Nitrolize.Tests.Integration.Schema
 {
     public class Mutation : MutationBase
     {
-
     }
 }
