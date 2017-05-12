@@ -19,6 +19,7 @@ namespace Nitrolize.Types.Base
         protected ViewerTypeBase()
         {
             this.FindAndConvertPropertiesToFields();
+            this.FindAndConvertPropertiesToLists();
             this.FindAndConvertPropertiesToConnections();
         }
 
@@ -79,14 +80,14 @@ namespace Nitrolize.Types.Base
             Func<ResolveFieldContext<object>, object> resolve = (context) =>
             {
                 // get the connection delegate
-                var method = ((Delegate)(field.GetValue(this))).GetMethodInfo();
+                var method = ((Delegate)(field.GetValue(this)));
 
                 // convert the global id to local id
                 var globalId = context.GetArgument<string>(entityType.GetIdPropertyName().ToFirstLower());
                 var id = GlobalId.ToLocalId(idType, globalId);
 
                 // invoke field with "context" and "id"
-                return method.Invoke(this, new object[] { context, id });
+                return method.DynamicInvoke(new object[] { context, id });
             };
 
             // handle authentication and authorization
@@ -96,6 +97,33 @@ namespace Nitrolize.Types.Base
             var graphQLField = this.AddSingleField(entityType, resolve, field.Name.ToFirstLower());
             graphQLField.RequiresRoles(requiredRoles);
             graphQLField.RequiresAuthentication(isAuthenticationRequired);
+        }
+
+        private void FindAndConvertPropertiesToLists()
+        {
+            // find all list properties
+            var lists = this.GetPropertiesWithAttribute<ListAttribute>();
+            foreach (var list in lists)
+            {
+                // construct ListGraphType<EntityType>
+                var entityType = list.PropertyType.GetGenericArguments()[0].MapToGraphType();
+                var listGraphType = typeof(ListGraphType<>).MakeGenericType(entityType);
+
+                // construct resolving method
+                Func<ResolveFieldContext<object>, object> resolve = (context) =>
+                {
+                    var method = ((Delegate)(list.GetValue(this)));
+                    return method.DynamicInvoke(new object[] { context });
+                };
+
+                // handle authentication and authorization
+                var isAuthenticationRequired = list.GetAttribute<ListAttribute>().IsAuthenticationRequired;
+                var requiredRoles = list.GetRequiredRoles();
+
+                var graphQLField = this.Field(listGraphType, list.Name.ToFirstLower(), null, new QueryArguments(), resolve);
+                graphQLField.RequiresRoles(requiredRoles);
+                graphQLField.RequiresAuthentication(isAuthenticationRequired);
+            }
         }
 
         private void FindAndConvertPropertiesToConnections()
@@ -113,7 +141,7 @@ namespace Nitrolize.Types.Base
                 Func<ResolveFieldContext<object>, object> resolve = (context) =>
                 {
                     // get the connection delegate
-                    var method = ((Delegate)(connection.GetValue(this))).GetMethodInfo();
+                    var method = ((Delegate)(connection.GetValue(this)));
 
                     // get order by infos
                     var orderByValue = context.GetArgument<int?>("orderBy");
@@ -144,7 +172,7 @@ namespace Nitrolize.Types.Base
                     });
 
                     // invoke connection with "context" and "parameters"
-                    return method.Invoke(this, new object[] { context, parameters });
+                    return method.DynamicInvoke(new object[] { context, parameters });
                 };
 
                 // handle authentication and authorization
