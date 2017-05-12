@@ -376,7 +376,6 @@ namespace Nitrolize.Extensions
 
             // handle object types
             return typeof(ObjectType<>).MakeGenericType(type);
-            // throw new NotImplementedException($"There is no graph type mapping implemented for {type.Name}.");
         }
 
         public static bool IsSimpleType(this Type type)
@@ -418,26 +417,6 @@ namespace Nitrolize.Extensions
             return type.IsGenericType;
 #endif
         }
-
-//#if NETCOREAPP1_0
-//        public static MethodInfo[] GetMethods(this Type type)
-//        {
-//            return type.GetTypeInfo().GetMethods();
-//        }
-
-//        public static MethodInfo GetMethod(this Type type, string name)
-//        {
-//            return type.GetTypeInfo().GetMethod(name);
-//        }
-
-//        public static Type GetInterface(this Type type, string name)
-//        {
-//            return type.GetTypeInfo().GetInterface(name);
-//        }
-
-//#endif
-
-
 #endregion
     }
 }
