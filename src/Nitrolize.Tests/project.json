@@ -6,7 +6,7 @@
     "Machine.Fakes.Moq": "2.8.0",
     "Machine.Specifications": "0.11.0",
     "NETStandard.Library": "1.6.1",
-    "Nitrolize": "0.2.0-*",
+    "Nitrolize": "0.2.1-*",
     "System.Reflection": "4.3.0"
   },
   "frameworks": {
