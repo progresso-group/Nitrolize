@@ -109,6 +109,9 @@ namespace Nitrolize.Types.Base
                 var entityType = list.PropertyType.GetGenericArguments()[0].MapToGraphType();
                 var listGraphType = typeof(ListGraphType<>).MakeGenericType(entityType);
 
+                // get arguments from attributes
+                var arguments = new QueryArguments(list.GetQueryArguments());
+
                 // construct resolving method
                 Func<ResolveFieldContext<object>, object> resolve = (context) =>
                 {
@@ -120,7 +123,7 @@ namespace Nitrolize.Types.Base
                 var isAuthenticationRequired = list.GetAttribute<ListAttribute>().IsAuthenticationRequired;
                 var requiredRoles = list.GetRequiredRoles();
 
-                var graphQLField = this.Field(listGraphType, list.Name.ToFirstLower(), null, new QueryArguments(), resolve);
+                var graphQLField = this.Field(listGraphType, list.Name.ToFirstLower(), null, arguments, resolve);
                 graphQLField.RequiresRoles(requiredRoles);
                 graphQLField.RequiresAuthentication(isAuthenticationRequired);
             }
