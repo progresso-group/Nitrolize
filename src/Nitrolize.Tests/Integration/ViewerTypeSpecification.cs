@@ -56,6 +56,34 @@ namespace Nitrolize.Tests.Schema
         };
     }
 
+    public class Wen_querying_a_field_that_privides_a_list : ViewerTypeSpecification
+    {
+        protected static string Query = @"
+            {
+                viewer {
+                    entityA(id: ""VXNlciNmOTM2OGNlNC0wNjhkLTQxN2ItYmZiZi0wMDdkMzEyYTA4ZmM="") {
+                        id
+                        name
+                        entities {
+                            edges {
+                                node {
+                                    id
+                                    value
+                                }
+                            }
+                        }
+                    }
+                }
+            }";
+
+        Because of = () => Result = Execute(Query);
+
+        It should_return_a_property_of_an_item_in_the_list = () => {
+            var value = (double)Result["viewer"]["entityA"]["entities"]["edges"][0]["node"]["value"];
+            value.Should().Be(1.1);
+        };
+    }
+
     public class When_querying_a_list : ViewerTypeSpecification
     {
         protected static string Query = @"
