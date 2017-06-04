@@ -13,7 +13,7 @@ namespace Nitrolize.Tests.Integration.Schema
             this.Field<ViewerType>("viewer", resolve: context => new Viewer())
                 .RequiresAuthentication(false);
 
-            this.Field<NodeType>(
+            this.Field<NodeInterfaceType>(
                 "node",
                 arguments: new QueryArguments(new QueryArgument<IdGraphType> { Name = "id", Description = "The node id." }),
                 resolve: context =>
@@ -23,6 +23,11 @@ namespace Nitrolize.Tests.Integration.Schema
                     var entityName = GlobalId.ToEntityName(globalId);
 
                     // switch through entity names and call matching repository or manager
+                    if (entityName == "Viewer")
+                    {
+                        return new Viewer();
+                    }
+
                     if (entityName == "EntityA")
                     {
                         var id = GlobalId.ToLocalId<Guid>(globalId);
