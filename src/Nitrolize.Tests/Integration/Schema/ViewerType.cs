@@ -1,6 +1,7 @@
 ﻿using Nitrolize.Convenience.Attributes;
 using Nitrolize.Convenience.Delegates;
 using Nitrolize.Models;
+using Nitrolize.Tests.Integration.Models;
 using Nitrolize.Types.Base;
 using System;
 using System.Collections.Generic;

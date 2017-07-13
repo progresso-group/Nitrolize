@@ -5,8 +5,11 @@ using GraphQL.Instrumentation;
 using GraphQL.Validation.Complexity;
 using Machine.Fakes;
 using Machine.Specifications;
+using Nitrolize.Tests.Integration.Authentication;
 using Nitrolize.Types.Node;
+using Nitrolize.Validation;
 using System.Collections.Generic;
+using System.Linq;
 using TestSchema = Nitrolize.Tests.Integration.Schema;
 
 namespace Nitrolize.Tests.Schema
@@ -29,9 +32,14 @@ namespace Nitrolize.Tests.Schema
 
                 _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
                 _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
-                _.UserContext = null;
-                _.ValidationRules = null;
+                _.UserContext = new MockUserContext();
+                _.ValidationRules = new[] { new RequiresAuthValidationRule<int>() };
             }).Await().AsTask.Result;
+
+            if (result.Errors != null && result.Errors.Count > 0)
+            {
+                throw new System.Exception(result.Errors.ToList().First().Message);
+            }
 
             return result;
         }
@@ -42,13 +50,13 @@ namespace Nitrolize.Tests.Schema
         protected static string Query = @"
             query Entity($id_0:ID!) {
               node(id:$id_0) {
-                id,
-                __typename,
+                id
+                __typename
                 ...F0
               }
             }
             fragment F0 on EntityA {
-              id,
+              id
               name
             }
         ";
@@ -67,16 +75,16 @@ namespace Nitrolize.Tests.Schema
         protected static string Query = @"
             query EntityList_ViewerRelayQL($id_0:ID!) {
               node(id:$id_0) {
-                id,
-                __typename,
+                id
+                __typename
                 ...F0
               }
             }
             fragment F0 on ViewerType {
               _entityListdSPVg:entityList {
-                id,
+                id
                 name
-              },
+              }
               id
             }
         ";

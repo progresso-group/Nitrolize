@@ -5,7 +5,10 @@ using GraphQL.Instrumentation;
 using GraphQL.Validation.Complexity;
 using Machine.Fakes;
 using Machine.Specifications;
+using Nitrolize.Tests.Integration.Authentication;
 using Nitrolize.Types.Base;
+using Nitrolize.Validation;
+using System.Linq;
 using TestSchema = Nitrolize.Tests.Integration.Schema;
 
 namespace Nitrolize.Tests.Schema
@@ -17,20 +20,32 @@ namespace Nitrolize.Tests.Schema
         protected static IDocumentWriter DocumentWriter = new DocumentWriter(true);
         protected static dynamic Result;
 
-        protected static object Execute(string query)
+        protected static object Execute(string query, string inputsString = null)
         {
+            var inputs = new Inputs();
+
+            if (inputsString != null)
+            {
+                inputs = inputsString.ToInputs();
+            }
+
             var result = DocumentExecuter.ExecuteAsync(_ =>
             {
                 _.Schema = new TestSchema.Schema();
                 _.Query = query;
                 _.OperationName = null;
-                _.Inputs = new Inputs();
+                _.Inputs = inputs;
 
                 _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
                 _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
-                _.UserContext = null;
-                _.ValidationRules = null;
+                _.UserContext = new MockUserContext();
+                _.ValidationRules = new[] { new RequiresAuthValidationRule<int>() };
             }).Await().AsTask.Result;
+
+            if (result.Errors != null && result.Errors.Count > 0)
+            {
+                throw new System.Exception(result.Errors.ToList().First().Message);
+            }
 
             return result.Data;
         }
@@ -56,7 +71,7 @@ namespace Nitrolize.Tests.Schema
         };
     }
 
-    public class Wen_querying_a_field_that_privides_a_list : ViewerTypeSpecification
+    public class When_querying_a_field_that_provides_a_list : ViewerTypeSpecification
     {
         protected static string Query = @"
             {
@@ -151,5 +166,31 @@ namespace Nitrolize.Tests.Schema
         It should_return_second_edge_cursor = () => ((object)Result["viewer"]["entityConnection"]["edges"][1]["cursor"]).Should().NotBeNull();
 
         It should_return_second_edge_node_name = () => ((object)Result["viewer"]["entityConnection"]["edges"][1]["node"]["name"]).Should().Be("No2");
+    }
+
+    public class When_calling_a_simple_update_mutation : ViewerTypeSpecification
+    {
+        protected static string Query = @"
+                mutation simpleUpdate($input_0: updateEntityAInput!) {
+                    updateEntityA(input: $input_0) {
+                        id
+                        name
+                    }
+                }            
+        ";
+
+        protected static string Variables = @"
+            {
+                input_0: {
+                    id: ""VXNlciNmOTM2OGNlNC0wNjhkLTQxN2ItYmZiZi0wMDdkMzEyYTA4ZmM="",
+                    name: ""example entity"",
+                    entities: []
+                }
+            }
+        ";
+
+        Because of = () => Result = Execute(Query, Variables);
+
+        It should_return_the_changed_object = () => ((object)Result["updateEntityA"]["name"]).Should().Be("example entity_mutated");
     }
 }

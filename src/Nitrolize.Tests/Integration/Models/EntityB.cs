@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nitrolize.Tests.Integration.Schema
+namespace Nitrolize.Tests.Integration.Models
 {
     public class EntityB
     {

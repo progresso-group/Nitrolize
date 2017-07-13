@@ -24,6 +24,7 @@ namespace Nitrolize.Types.Base
         {
             this.FindAndConvertPropertiesToAddMutations();
             this.FindAndConvertPropertiesToUpdateMutations();
+            this.FindAndConvertPropertiesToSimpleUpdateMutations();
             this.FindAndConvertPropertiesToDeleteMutations();
         }
 
@@ -84,6 +85,31 @@ namespace Nitrolize.Types.Base
 
         /// <summary>
         /// Creates mutation fields for every property found that is annotated
+        /// by the [Mutation] attribute and has the type of <see cref="Update<>" /> Delegate.
+        /// </summary>
+        private void FindAndConvertPropertiesToSimpleUpdateMutations()
+        {
+            var properties = this.GetMutationPropertiesOfType(typeof(Update<>));
+            foreach (var property in properties)
+            {
+                // get the type arguments
+                var genericArguments = property.PropertyType.GetGenericArguments();
+                var entityType = genericArguments[0];
+
+                // create a resolve Func from the properties Delegate method
+                Func<ResolveFieldContext<object>, object, object> resolve = (context, input) =>
+                {
+                    return ((Delegate)property.GetValue(this)).DynamicInvoke(context, input);
+                };
+
+                // create the field
+                var field = this.CreateSimpleUpdateMutation(entityType, resolve, property.Name.ToFirstLower());
+                this.SetAuthenticationAndAuthorizationConfigForField(field, property);
+            }
+        }
+
+        /// <summary>
+        /// Creates mutation fields for every property found that is annotated
         /// by the [Mutation] attribute and has the type of <see cref="Delete<,,>"/> Delegate.
         /// </summary>
         private void FindAndConvertPropertiesToDeleteMutations()
@@ -118,10 +144,10 @@ namespace Nitrolize.Types.Base
         /// <returns>All mutation properties with a given Delegate type.</returns>
         private IEnumerable<PropertyInfo> GetMutationPropertiesOfType(Type type)
         {
-            var typeName = type.Name.ToCleanGenericTypeDefinitionName();
+            var typeName = type.Name;
 
             var properties = this.GetPropertiesWithAttribute<MutationAttribute>();
-            return properties.Where(p => p.PropertyType.Name.ToCleanGenericTypeDefinitionName().Equals(typeName));
+            return properties.Where(p => p.PropertyType.Name.Equals(typeName));
         }
 
         /// <summary>
