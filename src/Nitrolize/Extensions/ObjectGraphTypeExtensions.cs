@@ -215,6 +215,38 @@ namespace Nitrolize.Extensions
             return (FieldType)method.Invoke(null, new object[] { type, resolve, mutationName });
         }
 
+        public static FieldType CreateSimpleUpdateMutation(this ObjectGraphType<object> type, Type entityType, Func<ResolveFieldContext<object>, object, object> resolve, string mutationName)
+        {
+            // NodeObjectType<entityType>>
+            var nodeType = typeof(NodeObjectType<>).MakeGenericType(entityType).ConvertToVirtualType();
+            
+            // construct mutation name (i.e. "updateOrder")
+            var fieldName = mutationName != null ? mutationName : $"update{entityType.Name}";
+
+            // construct NonNullableGraphType<UpdateInputType<T>>
+            var updateInputType = typeof(SimpleUpdateInputType<>).MakeGenericType(entityType);
+            var nonNullableGraphType = typeof(NonNullGraphType<>).MakeGenericType(updateInputType);
+            
+            // construct arguments
+            var argument = new QueryArgument(nonNullableGraphType) { Name = "input" };
+            var arguments = new QueryArguments(argument);
+
+            // construct resolver
+            Func<ResolveFieldContext<object>, object> resolver = (context) =>
+            {
+                var inputType = entityType.ConvertToInputType();
+                var getArgumentMethod = context.GetType().GetMethod("GetArgument").MakeGenericMethod(inputType);
+                // call like context.GetArgument<TInput>("input");
+                var input = getArgumentMethod.Invoke(context, new[] { "input", null }).CloneAs(entityType);
+                return resolve(context, input);
+            };
+
+            // call Field like type.Field<UpdatePayloadType<Order>>("updateOrder", args, resolve)
+            var method = type.GetType().GetMethods().First(m => m.Name == "Field" && m.IsGenericMethod && m.ReturnType == typeof(FieldType));
+            method = method.MakeGenericMethod(nodeType);
+            return (FieldType)method.Invoke(type, new object[] { fieldName, null, arguments, resolver, null });
+        }
+
         public static FieldType CreateDeleteMutation<TId, TEntity, TViewer>(this ObjectGraphType<object> type, Func<ResolveFieldContext<object>, object, object, object> resolve, string mutationName = null) where TEntity : class
         {
             // construct DeletePayloadType<Order>

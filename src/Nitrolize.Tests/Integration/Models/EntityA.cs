@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nitrolize.Tests.Integration.Schema
+namespace Nitrolize.Tests.Integration.Models
 {
     public class EntityA
     {

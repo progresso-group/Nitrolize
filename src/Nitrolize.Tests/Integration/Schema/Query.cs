@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using Nitrolize.Extensions;
 using Nitrolize.Identification;
+using Nitrolize.Tests.Integration.Models;
 using Nitrolize.Types.Node;
 using System;
 
